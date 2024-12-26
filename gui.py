@@ -9,6 +9,7 @@ import queue
 from waf_tester import WAFTester
 from config import Config
 import time
+import os
 
 class WAFTesterGUI:
     def __init__(self, root):
@@ -87,57 +88,110 @@ class WAFTesterGUI:
         self.progress_label.config(text=f"{progress:.1f}%")
         self.root.update_idletasks()
         
-    def start_test(self):
-        # 獲取輸入值
-        url = self.url_entry.get()
+    def validate_inputs(self):
+        """驗證所有輸入"""
+        # 驗證URL
+        url = self.url_entry.get().strip()
         if not url:
-            messagebox.showerror("錯誤", "請輸入目標URL")
-            return
-            
+            raise ValueError("請輸入目標URL")
+        if not url.startswith(('http://', 'https://')):
+            raise ValueError("URL必須以http://或https://開頭")
+
+        # 驗證線程數
         try:
             threads = int(self.threads_var.get())
-            duration = int(self.duration_var.get())
-            rate_limit = int(self.rate_var.get())
+            if threads < 1:
+                raise ValueError("並發線程數必須大於0")
+            if threads > 100:
+                raise ValueError("並發線程數不能超過100")
         except ValueError:
-            messagebox.showerror("錯誤", "請輸入有效的數字")
-            return
+            raise ValueError("並發線程數必須是有效的整數")
+
+        # 驗證持續時間
+        try:
+            duration = int(self.duration_var.get())
+            if duration < 1:
+                raise ValueError("測試持續時間必須大於0秒")
+            if duration > 3600:
+                raise ValueError("測試持續時間不能超過3600秒（1小時）")
+        except ValueError:
+            raise ValueError("測試持續時間必須是有效的整數")
+
+        # 驗證速率限制
+        try:
+            rate_limit = int(self.rate_var.get())
+            if rate_limit < 0:
+                raise ValueError("請求速率限制不能為負數")
+            if rate_limit > 1000:
+                raise ValueError("請求速率限制不能超過1000次/秒")
+        except ValueError:
+            raise ValueError("請求速率限制必須是有效的整數")
+
+        # 驗證文件
+        params_file = self.params_var.get()
+        if params_file:
+            if not os.path.exists(params_file):
+                raise ValueError(f"無法找到參數文件：{params_file}")
+            if not params_file.endswith(('.json', '.txt')):
+                raise ValueError("參數文件必須是.json或.txt格式")
+
+        headers_file = self.headers_var.get()
+        if headers_file:
+            if not os.path.exists(headers_file):
+                raise ValueError(f"無法找到Headers文件：{headers_file}")
+            if not headers_file.endswith('.json'):
+                raise ValueError("Headers文件必須是.json格式")
+
+        return url, threads, duration, rate_limit, params_file, headers_file
+
+    def start_test(self):
+        """開始測試"""
+        try:
+            # 驗證輸入
+            url, threads, duration, rate_limit, params_file, headers_file = self.validate_inputs()
             
-        # 禁用開始按鈕
-        self.start_button.state(['disabled'])
-        self.status_label.config(text="測試進行中...")
-        
-        # 重置進度條
-        self.progress_var.set(0)
-        self.progress_label.config(text="0%")
-        
-        # 創建配置
-        config = Config(
-            url=url,
-            threads=threads,
-            duration=duration,
-            rate_limit=rate_limit,
-            params_file=self.params_var.get() or None,
-            headers_file=self.headers_var.get() or None
-        )
-        
-        # 在新線程中運行測試
-        def run_test():
-            try:
-                tester = WAFTester(config)
-                start_time = time.time()
-                
-                def progress_callback():
-                    current_time = min(time.time() - start_time, duration)
-                    self.root.after(0, lambda: self.update_progress(current_time, duration))
-                    return current_time >= duration
-                
-                results = tester.run(progress_callback)
-                tester.generate_report(results)
-                self.root.after(0, lambda: self.test_completed())
-            except Exception as e:
-                self.root.after(0, lambda: self.test_failed(str(e)))
-                
-        threading.Thread(target=run_test, daemon=True).start()
+            # 禁用開始按鈕
+            self.start_button.state(['disabled'])
+            self.status_label.config(text="測試進行中...")
+            
+            # 重置進度條
+            self.progress_var.set(0)
+            self.progress_label.config(text="0%")
+            
+            # 創建配置
+            config = Config(
+                url=url,
+                threads=threads,
+                duration=duration,
+                rate_limit=rate_limit,
+                params_file=params_file or None,
+                headers_file=headers_file or None
+            )
+            
+            # 在新線程中運行測試
+            def run_test():
+                try:
+                    tester = WAFTester(config)
+                    start_time = time.time()
+                    
+                    def progress_callback():
+                        current_time = min(time.time() - start_time, duration)
+                        self.root.after(0, lambda: self.update_progress(current_time, duration))
+                        return current_time >= duration
+                    
+                    results = tester.run(progress_callback)
+                    tester.generate_report(results)
+                    self.root.after(0, lambda: self.test_completed())
+                except Exception as e:
+                    self.root.after(0, lambda: self.test_failed(str(e)))
+                    
+            threading.Thread(target=run_test, daemon=True).start()
+            
+        except ValueError as e:
+            messagebox.showerror("輸入錯誤", str(e))
+        except Exception as e:
+            messagebox.showerror("錯誤", f"發生未知錯誤：{str(e)}")
+            self.start_button.state(['!disabled'])
         
     def test_completed(self):
         self.start_button.state(['!disabled'])
