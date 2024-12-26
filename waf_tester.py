@@ -11,6 +11,18 @@ from rich.progress import Progress, TaskID
 from typing import Dict, List, Any
 import random
 from config import Config
+import matplotlib as mpl
+import platform
+
+# 設置中文字體
+if platform.system() == 'Windows':
+    plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 微軟雅黑
+elif platform.system() == 'Darwin':
+    plt.rcParams['font.sans-serif'] = ['PingFang HK']     # macOS
+else:
+    plt.rcParams['font.sans-serif'] = ['Noto Sans TC']    # Linux
+
+plt.rcParams['axes.unicode_minus'] = False  # 解決負號顯示問題
 
 class WAFTester:
     def __init__(self, config: Config):
@@ -135,21 +147,33 @@ WAF測試報告
 
             # 生成圖表
             try:
+                # 響應時間分佈圖
                 plt.figure(figsize=(10, 6))
                 df['response_time'].hist(bins=50)
-                plt.title('響應時間分佈')
-                plt.xlabel('響應時間 (秒)')
-                plt.ylabel('請求數量')
-                plt.savefig('response_time_distribution.png')
+                plt.title('響應時間分佈', fontsize=12)
+                plt.xlabel('響應時間 (秒)', fontsize=10)
+                plt.ylabel('請求數量', fontsize=10)
+                plt.grid(True, linestyle='--', alpha=0.7)
+                plt.savefig('response_time_distribution.png', dpi=300, bbox_inches='tight')
                 plt.close()
 
-                # 生成狀態碼分佈圖
+                # 狀態碼分佈圖
                 plt.figure(figsize=(8, 8))
                 status_counts = df['status'].value_counts()
                 if not status_counts.empty:
-                    status_counts.plot(kind='pie', autopct='%1.1f%%')
-                    plt.title('請求狀態碼分佈')
-                    plt.savefig('status_distribution.png')
+                    colors = ['#2ecc71', '#e74c3c', '#3498db', '#f1c40f']  # 設置顏色
+                    patches, texts, autotexts = plt.pie(
+                        status_counts, 
+                        labels=status_counts.index,
+                        autopct='%1.1f%%',
+                        colors=colors,
+                        startangle=90
+                    )
+                    # 設置字體大小
+                    plt.setp(autotexts, size=9, weight='bold')
+                    plt.setp(texts, size=9)
+                    plt.title('請求狀態碼分佈', fontsize=12, pad=20)
+                    plt.savefig('status_distribution.png', dpi=300, bbox_inches='tight')
                 plt.close()
             except Exception as e:
                 print(f"生成圖表時出錯：{str(e)}")
