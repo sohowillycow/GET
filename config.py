@@ -5,6 +5,7 @@ import json
 import os
 from dataclasses import dataclass
 from typing import Dict, List, Optional
+from urllib.parse import urlparse
 
 @dataclass
 class Config:
@@ -29,6 +30,17 @@ class Config:
             raise ValueError("URL不能為空")
         if not self.url.startswith(('http://', 'https://')):
             raise ValueError("URL必須以http://或https://開頭")
+        
+        # 驗證URL格式
+        parsed_url = urlparse(self.url)
+        if not parsed_url.netloc:
+            raise ValueError("URL格式無效：必須包含域名")
+        if parsed_url.netloc == "":
+            raise ValueError("URL格式無效：域名不能為空")
+        if len(parsed_url.netloc) < 3:
+            raise ValueError("URL格式無效：域名太短")
+        if "." not in parsed_url.netloc:
+            raise ValueError("URL格式無效：域名必須包含至少一個點號")
         
         # 驗證線程數
         if not isinstance(self.threads, int):
