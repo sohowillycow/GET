@@ -113,7 +113,7 @@ class WAFTesterGUI:
             if duration < 1:
                 raise ValueError("測試持續時間必須大於0秒")
             if duration > 3600:
-                raise ValueError("測試持續時間不能超過3600秒（1小時）")
+                raise ValueError("測試持續時間不能��過3600秒（1小時）")
         except ValueError:
             raise ValueError("測試持續時間必須是有效的整數")
 
@@ -189,17 +189,27 @@ class WAFTesterGUI:
             
         except ValueError as e:
             messagebox.showerror("輸入錯誤", str(e))
+            self.reset_test_state()
         except Exception as e:
             messagebox.showerror("錯誤", f"發生未知錯誤：{str(e)}")
-            self.start_button.state(['!disabled'])
+            self.reset_test_state()
+
+    def reset_test_state(self):
+        """重置測試狀態"""
+        self.start_button.state(['!disabled'])  # 啟用開始按鈕
+        self.status_label.config(text="就緒")
+        self.progress_var.set(0)
+        self.progress_label.config(text="0%")
         
     def test_completed(self):
-        self.start_button.state(['!disabled'])
+        """測試完成處理"""
+        self.reset_test_state()
         self.status_label.config(text="測試完成！請查看報告文件。")
         messagebox.showinfo("完成", "測試已完成，報告已生成")
         
     def test_failed(self, error_message):
-        self.start_button.state(['!disabled'])
+        """測試失敗處理"""
+        self.reset_test_state()
         self.status_label.config(text="測試失敗")
         messagebox.showerror("錯誤", f"測試過程中發生錯誤：{error_message}")
         
