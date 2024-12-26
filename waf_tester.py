@@ -14,6 +14,52 @@ from config import Config
 import matplotlib as mpl
 import platform
 
+# 翻譯字典
+TRANSLATIONS = {
+    'zh_TW': {
+        'report_title': 'WAF測試報告',
+        'test_time': '測試時間',
+        'duration': '持續時間',
+        'threads': '並發線程',
+        'seconds': '秒',
+        'statistics': '統計摘要',
+        'total_requests': '總請求數',
+        'successful_requests': '成功請求',
+        'blocked_requests': '被阻擋請求',
+        'error_requests': '錯誤請求',
+        'avg_response_time': '平均響應時間',
+        'response_time_dist': '響應時間分佈',
+        'response_time': '響應時間 (秒)',
+        'request_count': '請求數量',
+        'status_dist': '請求狀態碼分佈',
+        'report_error': '生成報告時出錯',
+        'chart_error': '生成圖表時出錯',
+        'no_data': '沒有測試結果數據',
+        'missing_column': '結果數據中缺少必要的列'
+    },
+    'en_US': {
+        'report_title': 'WAF Test Report',
+        'test_time': 'Test Time',
+        'duration': 'Duration',
+        'threads': 'Concurrent Threads',
+        'seconds': 'seconds',
+        'statistics': 'Statistics Summary',
+        'total_requests': 'Total Requests',
+        'successful_requests': 'Successful Requests',
+        'blocked_requests': 'Blocked Requests',
+        'error_requests': 'Error Requests',
+        'avg_response_time': 'Average Response Time',
+        'response_time_dist': 'Response Time Distribution',
+        'response_time': 'Response Time (seconds)',
+        'request_count': 'Request Count',
+        'status_dist': 'Request Status Distribution',
+        'report_error': 'Error generating report',
+        'chart_error': 'Error generating charts',
+        'no_data': 'No test result data',
+        'missing_column': 'Missing required column in results'
+    }
+}
+
 # 設置中文字體
 if platform.system() == 'Windows':
     plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 微軟雅黑
@@ -30,6 +76,12 @@ class WAFTester:
         self.results = []
         self.start_time = None
         self.end_time = None
+        self.current_lang = 'zh_TW'  # 默認使用中文
+
+    def set_language(self, lang: str):
+        """設置語言"""
+        if lang in TRANSLATIONS:
+            self.current_lang = lang
 
     async def send_request(self, session: aiohttp.ClientSession, params: Dict = None) -> Dict[str, Any]:
         """發送單個請求並記錄結果"""
@@ -108,7 +160,7 @@ class WAFTester:
         try:
             # 確保結果不為空
             if not results:
-                raise ValueError("沒有測試結果數據")
+                raise ValueError(TRANSLATIONS[self.current_lang]['no_data'])
 
             # 轉換結果為DataFrame
             df = pd.DataFrame(results)
@@ -117,7 +169,7 @@ class WAFTester:
             required_columns = ['status', 'response_time']
             for col in required_columns:
                 if col not in df.columns:
-                    raise ValueError(f"結果數據中缺少必要的列：{col}")
+                    raise ValueError(f"{TRANSLATIONS[self.current_lang]['missing_column']}: {col}")
             
             # 基本統計
             total_requests = len(results)
@@ -127,19 +179,20 @@ class WAFTester:
             avg_response_time = df['response_time'].mean()
 
             # 生成報告
+            t = TRANSLATIONS[self.current_lang]
             report = f"""
-WAF測試報告
-===========
-測試時間：{datetime.fromtimestamp(self.start_time).strftime('%Y-%m-%d %H:%M:%S')}
-持續時間：{self.config.duration}秒
-並發線程：{self.config.threads}
+{t['report_title']}
+{'=' * len(t['report_title'])}
+{t['test_time']}：{datetime.fromtimestamp(self.start_time).strftime('%Y-%m-%d %H:%M:%S')}
+{t['duration']}：{self.config.duration}{t['seconds']}
+{t['threads']}：{self.config.threads}
 
-統計摘要：
-- 總請求數：{total_requests}
-- 成功請求：{successful_requests} ({(successful_requests/total_requests*100) if total_requests > 0 else 0:.2f}%)
-- 被阻擋請求：{blocked_requests} ({(blocked_requests/total_requests*100) if total_requests > 0 else 0:.2f}%)
-- 錯誤請求：{error_requests} ({(error_requests/total_requests*100) if total_requests > 0 else 0:.2f}%)
-- 平均響應時間：{avg_response_time*1000:.2f}ms
+{t['statistics']}：
+- {t['total_requests']}：{total_requests}
+- {t['successful_requests']}：{successful_requests} ({(successful_requests/total_requests*100) if total_requests > 0 else 0:.2f}%)
+- {t['blocked_requests']}：{blocked_requests} ({(blocked_requests/total_requests*100) if total_requests > 0 else 0:.2f}%)
+- {t['error_requests']}：{error_requests} ({(error_requests/total_requests*100) if total_requests > 0 else 0:.2f}%)
+- {t['avg_response_time']}：{avg_response_time*1000:.2f}ms
 """
             # 保存報告
             with open('waf_test_report.txt', 'w', encoding='utf-8') as f:
@@ -150,9 +203,9 @@ WAF測試報告
                 # 響應時間分佈圖
                 plt.figure(figsize=(10, 6))
                 df['response_time'].hist(bins=50)
-                plt.title('響應時間分佈', fontsize=12)
-                plt.xlabel('響應時間 (秒)', fontsize=10)
-                plt.ylabel('請求數量', fontsize=10)
+                plt.title(t['response_time_dist'], fontsize=12)
+                plt.xlabel(t['response_time'], fontsize=10)
+                plt.ylabel(t['request_count'], fontsize=10)
                 plt.grid(True, linestyle='--', alpha=0.7)
                 plt.savefig('response_time_distribution.png', dpi=300, bbox_inches='tight')
                 plt.close()
@@ -172,14 +225,14 @@ WAF測試報告
                     # 設置字體大小
                     plt.setp(autotexts, size=9, weight='bold')
                     plt.setp(texts, size=9)
-                    plt.title('請求狀態碼分佈', fontsize=12, pad=20)
+                    plt.title(t['status_dist'], fontsize=12, pad=20)
                     plt.savefig('status_distribution.png', dpi=300, bbox_inches='tight')
                 plt.close()
             except Exception as e:
-                print(f"生成圖表時出錯：{str(e)}")
+                print(f"{t['chart_error']}: {str(e)}")
 
             # 保存詳細結果
             df.to_csv('detailed_results.csv', index=False)
             
         except Exception as e:
-            raise Exception(f"生成報告時出錯：{str(e)}") 
+            raise Exception(f"{TRANSLATIONS[self.current_lang]['report_error']}: {str(e)}") 
