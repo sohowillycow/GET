@@ -8,7 +8,7 @@ import threading
 import queue
 from waf_tester import WAFTester
 from config import Config
-from rich.progress import Progress
+import time
 
 class WAFTesterGUI:
     def __init__(self, root):
@@ -60,10 +60,18 @@ class WAFTesterGUI:
         self.headers_entry.grid(row=5, column=1, sticky=(tk.W, tk.E), pady=5)
         ttk.Button(main_frame, text="瀏覽", command=lambda: self.browse_file(self.headers_var)).grid(row=5, column=2, padx=5)
         
+        # 進度條框架
+        progress_frame = ttk.LabelFrame(main_frame, text="測試進度", padding="5")
+        progress_frame.grid(row=6, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=10)
+        
         # 進度條
         self.progress_var = tk.DoubleVar()
-        self.progress = ttk.Progressbar(main_frame, length=400, mode='determinate', variable=self.progress_var)
-        self.progress.grid(row=6, column=0, columnspan=3, pady=20)
+        self.progress = ttk.Progressbar(progress_frame, length=400, mode='determinate', variable=self.progress_var)
+        self.progress.grid(row=0, column=0, pady=5)
+        
+        # 進度百分比標籤
+        self.progress_label = ttk.Label(progress_frame, text="0%")
+        self.progress_label.grid(row=0, column=1, padx=5)
         
         # 開始按鈕
         self.start_button = ttk.Button(main_frame, text="開始測試", command=self.start_test)
@@ -72,14 +80,11 @@ class WAFTesterGUI:
         # 狀態標籤
         self.status_label = ttk.Label(main_frame, text="就緒")
         self.status_label.grid(row=8, column=0, columnspan=3, pady=5)
-        
-    def browse_file(self, var):
-        filename = filedialog.askopenfilename()
-        if filename:
-            var.set(filename)
-            
-    def update_progress(self, value):
-        self.progress_var.set(value)
+
+    def update_progress(self, current_time, total_time):
+        progress = (current_time / total_time) * 100
+        self.progress_var.set(progress)
+        self.progress_label.config(text=f"{progress:.1f}%")
         self.root.update_idletasks()
         
     def start_test(self):
@@ -101,6 +106,10 @@ class WAFTesterGUI:
         self.start_button.state(['disabled'])
         self.status_label.config(text="測試進行中...")
         
+        # 重置進度條
+        self.progress_var.set(0)
+        self.progress_label.config(text="0%")
+        
         # 創建配置
         config = Config(
             url=url,
@@ -115,10 +124,15 @@ class WAFTesterGUI:
         def run_test():
             try:
                 tester = WAFTester(config)
-                with Progress() as progress:
-                    task = progress.add_task("[cyan]執行測試中...", total=duration)
-                    results = tester.run(progress, task)
-                    tester.generate_report(results)
+                start_time = time.time()
+                
+                def progress_callback():
+                    current_time = min(time.time() - start_time, duration)
+                    self.root.after(0, lambda: self.update_progress(current_time, duration))
+                    return current_time >= duration
+                
+                results = tester.run(progress_callback)
+                tester.generate_report(results)
                 self.root.after(0, lambda: self.test_completed())
             except Exception as e:
                 self.root.after(0, lambda: self.test_failed(str(e)))
@@ -134,6 +148,11 @@ class WAFTesterGUI:
         self.start_button.state(['!disabled'])
         self.status_label.config(text="測試失敗")
         messagebox.showerror("錯誤", f"測試過程中發生錯誤：{error_message}")
+        
+    def browse_file(self, var):
+        filename = filedialog.askopenfilename()
+        if filename:
+            var.set(filename)
 
 def main():
     root = tk.Tk()
