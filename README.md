@@ -1,4 +1,160 @@
-# WAF 測試工具
+# WAF Testing Tool / WAF 測試工具
+
+[English](#english) | [中文](#中文)
+
+# English
+
+This is a stress testing tool for Web Application Firewall (WAF), supporting both command-line and graphical user interfaces.
+
+## Features
+
+- **Dual Interface**
+  - Command Line Interface (CLI): Suitable for automated testing and script integration
+  - Graphical User Interface (GUI): Provides a user-friendly visual environment
+
+- **Core Functions**
+  - Support for HTTP/HTTPS GET request testing
+  - Configurable concurrent threads (1-100 threads)
+  - Adjustable test duration (1-3600 seconds)
+  - Request rate limiting (0-1000 requests/second)
+  - Custom GET parameters and Headers support
+  - Real-time test progress display
+
+- **Parameter Configuration**
+  - URL: Supports HTTP and HTTPS protocols
+  - Thread Count: Controls the number of concurrent requests
+  - Duration: Sets the test running time
+  - Rate Limit: Controls requests per second
+  - GET Parameters File: Supports .json and .txt formats
+  - Headers File: Supports .json format
+
+- **Result Analysis**
+  - Generates detailed test reports (waf_test_report.txt)
+  - Generates response time distribution graph (response_time_distribution.png)
+  - Generates request status distribution graph (status_distribution.png)
+  - Exports detailed test data (detailed_results.csv)
+
+## Requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+Required dependencies:
+- requests>=2.31.0
+- aiohttp>=3.9.1
+- asyncio>=3.4.3
+- click>=8.1.7
+- rich>=13.7.0
+- pandas>=2.1.4
+- matplotlib>=3.8.2
+- tk>=0.1.0 (Required for GUI mode)
+
+## Usage
+
+### GUI Mode
+
+Run the following command to start the graphical interface:
+
+```bash
+python gui.py
+```
+
+In the GUI:
+1. Enter target URL (must start with http:// or https://)
+2. Set concurrent threads (1-100)
+3. Set test duration (1-3600 seconds)
+4. Set request rate limit (0-1000, 0 means no limit)
+5. Optional: Select GET parameters file (.json or .txt)
+6. Optional: Select Headers file (.json)
+7. Click "Start Test" button to begin testing
+
+### Command Line Mode
+
+```bash
+python main.py --url TARGET_URL [OPTIONS]
+
+Options:
+  --url TEXT          Target URL (required)
+  --threads INTEGER   Concurrent threads (default: 10)
+  --duration INTEGER  Test duration (seconds) (default: 10)
+  --rate-limit INTEGER  Request rate limit (default: 0, no limit)
+  --params TEXT       GET parameters list file path
+  --headers TEXT      Custom Headers file path
+  --help             Show help information
+```
+
+## Input File Formats
+
+### GET Parameters File
+- JSON format example:
+```json
+[
+    {"param1": "value1"},
+    {"param2": "value2"}
+]
+```
+- TXT format example:
+```text
+param1=value1
+param2=value2
+```
+
+### Headers File
+- JSON format example:
+```json
+{
+    "User-Agent": "Custom-Agent",
+    "Accept": "application/json"
+}
+```
+
+## Output Files
+
+1. **waf_test_report.txt**: Contains test summary information
+   - Test time
+   - Duration
+   - Concurrent threads
+   - Request statistics (total, successful, blocked, errors)
+   - Average response time
+
+2. **response_time_distribution.png**: Response time distribution graph
+
+3. **status_distribution.png**: Request status code distribution graph
+
+4. **detailed_results.csv**: Detailed request records
+   - Timestamp
+   - Status code
+   - Response time
+   - Request parameters
+   - Headers information
+
+## Notes
+
+1. Ensure you have proper testing authorization before use
+2. Recommended to test in a testing environment first
+3. Set reasonable concurrent threads and rate limits to avoid overwhelming target servers
+4. Ensure test duration and thread count are within reasonable ranges
+
+## Development Information
+
+- Language: Python 3
+- Main Dependency: aiohttp (Async HTTP client)
+- GUI Framework: tkinter
+- Chart Generation: matplotlib
+- Data Processing: pandas
+
+## License
+
+[MIT License](LICENSE)
+
+## Contributing
+
+Issues and Pull Requests are welcome.
+
+---
+
+# 中文
 
 這是一個用於測試 Web 應用防火牆（WAF）的壓力測試工具，支持命令行和圖形界面兩種使用方式。
 
