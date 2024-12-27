@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Copyright (c) 2024 WillyCow
+This software is released under the MIT License.
+https://opensource.org/licenses/MIT
+"""
+
 import asyncio
 import time
 from datetime import datetime

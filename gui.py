@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Copyright (c) 2024 WillyCow
+This software is released under the MIT License.
+https://opensource.org/licenses/MIT
+"""
+
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from rich.console import Console
@@ -293,7 +299,7 @@ class WAFTesterGUI:
             # 驗證輸入
             url, threads, duration, rate_limit, params_file, headers_file = self.validate_inputs()
             
-            # 禁用開���按鈕
+            # 禁用開始按鈕
             self.start_button.state(['disabled'])
             self.status_label.config(text=TRANSLATIONS[self.current_lang]['testing'], anchor="center")
             
@@ -342,7 +348,7 @@ class WAFTesterGUI:
 
     def reset_test_state(self):
         """重置測試狀態"""
-        self.start_button.state(['!disabled'])  # 啟用開��按鈕
+        self.start_button.state(['!disabled'])  # 啟用開始按鈕
         self.status_label.config(text=TRANSLATIONS[self.current_lang]['ready'], anchor="center")
         self.progress_var.set(0)
         self.progress_label.config(text="0%")

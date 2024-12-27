@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Copyright (c) 2024 WillyCow
+This software is released under the MIT License.
+https://opensource.org/licenses/MIT
+"""
+
 import json
 import os
 from dataclasses import dataclass
