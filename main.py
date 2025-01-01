@@ -5,6 +5,11 @@
 Copyright (c) 2024 WillyCow
 This software is released under the MIT License.
 https://opensource.org/licenses/MIT
+
+免責聲明：
+本工具僅供合法的安全測試和研究使用。使用本工具進行任何測試之前，
+用戶必須獲得測試目標系統的明確授權。未經授權的測試行為可能導致
+嚴重的法律後果。使用本工具即表示您同意承擔所有相關風險和責任。
 """
 
 import click
@@ -14,6 +19,7 @@ from waf_tester import WAFTester
 from config import Config
 
 console = Console()
+
 
 @click.command()
 @click.option('--url', required=True, help='目標URL')
@@ -52,5 +58,6 @@ def main(url: str, threads: int, duration: int, rate_limit: int, params: str, he
         console.print(f"[red]錯誤：{str(e)}")
         raise click.Abort()
 
+
 if __name__ == '__main__':
-    main() 
+    main()
