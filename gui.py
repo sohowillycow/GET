@@ -96,7 +96,9 @@ TRANSLATIONS = {
         'agree': "我同意",
         'disagree': "我不同意",
         'disclaimer_title': "免責聲明",
-        'must_agree': "您必須同意免責聲明才能使用本工具"
+        'must_agree': "您必須同意免責聲明才能使用本工具",
+        'basic_settings': "基本設置",
+        'custom_request': "自定義請求內容"
     },
     'en_US': {
         'title': "WAF Testing Tool",
@@ -122,7 +124,9 @@ TRANSLATIONS = {
         'agree': "I Agree",
         'disagree': "I Disagree",
         'disclaimer_title': "Disclaimer",
-        'must_agree': "You must agree to the disclaimer to use this tool"
+        'must_agree': "You must agree to the disclaimer to use this tool",
+        'basic_settings': "Basic Settings",
+        'custom_request': "Custom Request Content"
     }
 }
 
@@ -194,38 +198,81 @@ class WAFTesterGUI:
         self.lang_button.config(
             text=TRANSLATIONS[self.current_lang]['switch_lang'])
 
-        # 更新所有標籤文字
+        # 更新免責聲明窗口
+        if hasattr(self, 'disclaimer_window') and self.disclaimer_window.winfo_exists():
+            self.disclaimer_window.title(
+                TRANSLATIONS[self.current_lang]['disclaimer_title'])
+            self.disclaimer_lang_label.config(
+                text=TRANSLATIONS[self.current_lang]['current_lang'])
+            self.disclaimer_lang_button.config(
+                text=TRANSLATIONS[self.current_lang]['switch_lang'])
+            self.disclaimer_text_widget.config(state=tk.NORMAL)
+            self.disclaimer_text_widget.delete(1.0, tk.END)
+            self.disclaimer_text_widget.insert(
+                tk.END, DISCLAIMER_TEXT[self.current_lang])
+            self.disclaimer_text_widget.config(state=tk.DISABLED)
+            self.disclaimer_agree_button.config(
+                text=TRANSLATIONS[self.current_lang]['agree'])
+            self.disclaimer_disagree_button.config(
+                text=TRANSLATIONS[self.current_lang]['disagree'])
+
+        # 更新主窗口中的所有文字
         for widget in self.root.winfo_children():
             if isinstance(widget, ttk.Frame):
                 for child in widget.winfo_children():
-                    if isinstance(child, ttk.Label):
-                        grid_info = child.grid_info()
-                        if grid_info:  # 確保部件在網格中
-                            row = grid_info['row']
-                            if row == 1:
-                                child.config(
-                                    text=TRANSLATIONS[self.current_lang]['target_url'])
-                            elif row == 2:
-                                child.config(
-                                    text=TRANSLATIONS[self.current_lang]['threads'])
-                            elif row == 3:
-                                child.config(
-                                    text=TRANSLATIONS[self.current_lang]['duration'])
-                            elif row == 4:
-                                child.config(
-                                    text=TRANSLATIONS[self.current_lang]['rate_limit'])
-                            elif row == 5:
-                                child.config(
-                                    text=TRANSLATIONS[self.current_lang]['params_file'])
-                            elif row == 6:
-                                child.config(
-                                    text=TRANSLATIONS[self.current_lang]['headers_file'])
-                    elif isinstance(child, ttk.Button) and child != self.lang_button:
-                        child.config(
-                            text=TRANSLATIONS[self.current_lang]['browse'])
-                    elif isinstance(child, ttk.LabelFrame):
-                        child.config(
-                            text=TRANSLATIONS[self.current_lang]['progress'])
+                    # 更新 LabelFrame 標題
+                    if isinstance(child, ttk.LabelFrame):
+                        current_text = child.cget("text")
+                        # 基本設置
+                        if current_text in [TRANSLATIONS['zh_TW']['basic_settings'], TRANSLATIONS['en_US']['basic_settings']]:
+                            child.config(
+                                text=TRANSLATIONS[self.current_lang]['basic_settings'])
+                        # 自定義請求內容
+                        elif current_text in [TRANSLATIONS['zh_TW']['custom_request'], TRANSLATIONS['en_US']['custom_request']]:
+                            child.config(
+                                text=TRANSLATIONS[self.current_lang]['custom_request'])
+                        # 測試進度
+                        elif current_text in [TRANSLATIONS['zh_TW']['progress'], TRANSLATIONS['en_US']['progress']]:
+                            child.config(
+                                text=TRANSLATIONS[self.current_lang]['progress'])
+
+                    # 遍歷 LabelFrame 內的元素
+                    if isinstance(child, ttk.LabelFrame):
+                        for subchild in child.winfo_children():
+                            # 更新標籤文字
+                            if isinstance(subchild, ttk.Label):
+                                current_text = subchild.cget("text")
+                                # 目標URL
+                                if current_text in [TRANSLATIONS['zh_TW']['target_url'], TRANSLATIONS['en_US']['target_url']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['target_url'])
+                                # 並發線程數
+                                elif current_text in [TRANSLATIONS['zh_TW']['threads'], TRANSLATIONS['en_US']['threads']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['threads'])
+                                # 測試持續時間
+                                elif current_text in [TRANSLATIONS['zh_TW']['duration'], TRANSLATIONS['en_US']['duration']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['duration'])
+                                # 請求速率限制
+                                elif current_text in [TRANSLATIONS['zh_TW']['rate_limit'], TRANSLATIONS['en_US']['rate_limit']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['rate_limit'])
+                                # GET參數文件
+                                elif current_text in [TRANSLATIONS['zh_TW']['params_file'], TRANSLATIONS['en_US']['params_file']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['params_file'])
+                                # Headers文件
+                                elif current_text in [TRANSLATIONS['zh_TW']['headers_file'], TRANSLATIONS['en_US']['headers_file']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['headers_file'])
+
+                            # 更新瀏覽按鈕文字
+                            if isinstance(subchild, ttk.Button) and subchild != self.lang_button:
+                                current_text = subchild.cget("text")
+                                if current_text in [TRANSLATIONS['zh_TW']['browse'], TRANSLATIONS['en_US']['browse']]:
+                                    subchild.config(
+                                        text=TRANSLATIONS[self.current_lang]['browse'])
 
         # 更新開始按鈕文字
         self.start_button.config(
@@ -233,16 +280,16 @@ class WAFTesterGUI:
 
         # 更新狀態標籤文字
         current_status = self.status_label.cget("text")
-        if current_status == TRANSLATIONS['zh_TW']['ready'] or current_status == TRANSLATIONS['en_US']['ready']:
+        if current_status in [TRANSLATIONS['zh_TW']['ready'], TRANSLATIONS['en_US']['ready']]:
             self.status_label.config(
                 text=TRANSLATIONS[self.current_lang]['ready'])
-        elif current_status == TRANSLATIONS['zh_TW']['testing'] or current_status == TRANSLATIONS['en_US']['testing']:
+        elif current_status in [TRANSLATIONS['zh_TW']['testing'], TRANSLATIONS['en_US']['testing']]:
             self.status_label.config(
                 text=TRANSLATIONS[self.current_lang]['testing'])
-        elif current_status == TRANSLATIONS['zh_TW']['test_complete'] or current_status == TRANSLATIONS['en_US']['test_complete']:
+        elif current_status in [TRANSLATIONS['zh_TW']['test_complete'], TRANSLATIONS['en_US']['test_complete']]:
             self.status_label.config(
                 text=TRANSLATIONS[self.current_lang]['test_complete'])
-        elif current_status == TRANSLATIONS['zh_TW']['test_failed'] or current_status == TRANSLATIONS['en_US']['test_failed']:
+        elif current_status in [TRANSLATIONS['zh_TW']['test_failed'], TRANSLATIONS['en_US']['test_failed']]:
             self.status_label.config(
                 text=TRANSLATIONS[self.current_lang]['test_failed'])
 
@@ -410,22 +457,22 @@ class WAFTesterGUI:
 
     def show_disclaimer(self, first_run=False):
         """顯示免責聲明對話框"""
-        disclaimer_window = tk.Toplevel(self.root)
-        disclaimer_window.title(
+        self.disclaimer_window = tk.Toplevel(self.root)
+        self.disclaimer_window.title(
             TRANSLATIONS[self.current_lang]['disclaimer_title'])
-        disclaimer_window.geometry("600x500")  # 增加窗口高度
-        disclaimer_window.transient(self.root)
-        disclaimer_window.grab_set()
+        self.disclaimer_window.geometry("600x500")  # 增加窗口高度
+        self.disclaimer_window.transient(self.root)
+        self.disclaimer_window.grab_set()
 
         # 禁用關閉按鈕，改為調用不同意的處理函數
-        disclaimer_window.protocol(
-            "WM_DELETE_WINDOW", lambda: self.handle_disclaimer_response(disclaimer_window, False))
+        self.disclaimer_window.protocol(
+            "WM_DELETE_WINDOW", lambda: self.handle_disclaimer_response(self.disclaimer_window, False))
 
         # 確保窗口大小不能調整
-        disclaimer_window.resizable(False, False)
+        self.disclaimer_window.resizable(False, False)
 
         # 主框架
-        main_frame = ttk.Frame(disclaimer_window, padding="10")
+        main_frame = ttk.Frame(self.disclaimer_window, padding="10")
         main_frame.pack(expand=True, fill=tk.BOTH)
 
         # 語言切換框架
@@ -433,54 +480,39 @@ class WAFTesterGUI:
         lang_frame.pack(fill=tk.X, pady=(0, 10))
 
         # 當前語言標籤
-        lang_label = ttk.Label(
+        self.disclaimer_lang_label = ttk.Label(
             lang_frame, text=TRANSLATIONS[self.current_lang]['current_lang'])
-        lang_label.pack(side=tk.LEFT, padx=5)
+        self.disclaimer_lang_label.pack(side=tk.LEFT, padx=5)
 
         # 語言切換按鈕
-        def switch_disclaimer_language():
-            self.current_lang = 'en_US' if self.current_lang == 'zh_TW' else 'zh_TW'
-            disclaimer_window.title(
-                TRANSLATIONS[self.current_lang]['disclaimer_title'])
-            lang_label.config(
-                text=TRANSLATIONS[self.current_lang]['current_lang'])
-            lang_button.config(
-                text=TRANSLATIONS[self.current_lang]['switch_lang'])
-            text_widget.config(state=tk.NORMAL)
-            text_widget.delete(1.0, tk.END)
-            text_widget.insert(tk.END, DISCLAIMER_TEXT[self.current_lang])
-            text_widget.config(state=tk.DISABLED)
-            agree_button.config(text=TRANSLATIONS[self.current_lang]['agree'])
-            disagree_button.config(
-                text=TRANSLATIONS[self.current_lang]['disagree'])
-
-        lang_button = ttk.Button(lang_frame, text=TRANSLATIONS[self.current_lang]['switch_lang'],
-                                 command=switch_disclaimer_language)
-        lang_button.pack(side=tk.RIGHT, padx=5)
+        self.disclaimer_lang_button = ttk.Button(lang_frame, text=TRANSLATIONS[self.current_lang]['switch_lang'],
+                                                 command=self.switch_language)
+        self.disclaimer_lang_button.pack(side=tk.RIGHT, padx=5)
 
         # 文本框框架（添加固定高度）
         text_frame = ttk.Frame(main_frame)
         text_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
         # 文本框
-        text_widget = tk.Text(text_frame, wrap=tk.WORD,
-                              padx=10, pady=10, height=15)  # 設置固定高度
-        text_widget.pack(fill=tk.BOTH, expand=True)
-        text_widget.insert(tk.END, DISCLAIMER_TEXT[self.current_lang])
-        text_widget.config(state=tk.DISABLED)
+        self.disclaimer_text_widget = tk.Text(text_frame, wrap=tk.WORD,
+                                              padx=10, pady=10, height=15)  # 設置固定高度
+        self.disclaimer_text_widget.pack(fill=tk.BOTH, expand=True)
+        self.disclaimer_text_widget.insert(
+            tk.END, DISCLAIMER_TEXT[self.current_lang])
+        self.disclaimer_text_widget.config(state=tk.DISABLED)
 
         # 按鈕框架
         button_frame = ttk.Frame(main_frame)
         button_frame.pack(pady=(0, 10))
 
         # 同意/不同意按鈕
-        agree_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['agree'],
-                                  command=lambda: self.handle_disclaimer_response(disclaimer_window, True))
-        agree_button.pack(side=tk.LEFT, padx=5)
+        self.disclaimer_agree_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['agree'],
+                                                  command=lambda: self.handle_disclaimer_response(self.disclaimer_window, True))
+        self.disclaimer_agree_button.pack(side=tk.LEFT, padx=5)
 
-        disagree_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['disagree'],
-                                     command=lambda: self.handle_disclaimer_response(disclaimer_window, False))
-        disagree_button.pack(side=tk.LEFT, padx=5)
+        self.disclaimer_disagree_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['disagree'],
+                                                     command=lambda: self.handle_disclaimer_response(self.disclaimer_window, False))
+        self.disclaimer_disagree_button.pack(side=tk.LEFT, padx=5)
 
     def handle_disclaimer_response(self, window, accepted):
         """處理用戶對免責聲明的響應"""
@@ -495,90 +527,100 @@ class WAFTesterGUI:
 
     def create_widgets(self):
         # 創建主框架
-        main_frame = ttk.Frame(self.root, padding="10")
+        main_frame = ttk.Frame(self.root, padding="20")  # 增加內邊距
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
         # 配置主框架的網格權重
-        for i in range(10):
-            main_frame.grid_rowconfigure(i, weight=1)
-        main_frame.grid_columnconfigure(1, weight=1)
+        main_frame.grid_columnconfigure(1, weight=1)  # 讓輸入框可以自動擴展
 
         # 語言切換框架
         lang_frame = ttk.Frame(main_frame)
         lang_frame.grid(row=0, column=0, columnspan=3,
-                        sticky=(tk.W, tk.E), pady=5)
+                        sticky=(tk.W, tk.E), pady=(0, 20))  # 增加底部間距
 
         # 當前語言標籤
         self.current_lang_label = ttk.Label(
             lang_frame, text=TRANSLATIONS[self.current_lang]['current_lang'])
-        self.current_lang_label.pack(side=tk.LEFT, padx=5)
+        self.current_lang_label.pack(side=tk.LEFT)
 
         # 語言切換按鈕
         self.lang_button = ttk.Button(lang_frame, text=TRANSLATIONS[self.current_lang]['switch_lang'],
                                       command=self.switch_language)
-        self.lang_button.pack(side=tk.RIGHT, padx=5)
+        self.lang_button.pack(side=tk.RIGHT)
+
+        # 基本設置框架
+        basic_frame = ttk.LabelFrame(main_frame, text="基本設置", padding="10")
+        basic_frame.grid(row=1, column=0, columnspan=3,
+                         sticky=(tk.W, tk.E), pady=(0, 20))
+        basic_frame.grid_columnconfigure(1, weight=1)
 
         # URL輸入
-        ttk.Label(main_frame, text=TRANSLATIONS[self.current_lang]['target_url']).grid(
-            row=1, column=0, sticky=tk.W, pady=5)
-        self.url_entry = ttk.Entry(main_frame)
-        self.url_entry.grid(row=1, column=1, columnspan=2,
-                            sticky=(tk.W, tk.E), pady=5, padx=(5, 0))
+        ttk.Label(basic_frame, text=TRANSLATIONS[self.current_lang]['target_url'], width=15).grid(
+            row=0, column=0, sticky=tk.W, pady=5)
+        self.url_entry = ttk.Entry(basic_frame)
+        self.url_entry.grid(row=0, column=1, columnspan=2,
+                            sticky=(tk.W, tk.E), padx=(10, 0), pady=5)
 
         # 線程數
-        ttk.Label(main_frame, text=TRANSLATIONS[self.current_lang]['threads']).grid(
-            row=2, column=0, sticky=tk.W, pady=5)
+        ttk.Label(basic_frame, text=TRANSLATIONS[self.current_lang]['threads'], width=15).grid(
+            row=1, column=0, sticky=tk.W, pady=5)
         self.threads_var = tk.StringVar(value="10")
         self.threads_entry = ttk.Entry(
-            main_frame, textvariable=self.threads_var, width=10)
+            basic_frame, textvariable=self.threads_var, width=10)
         self.threads_entry.grid(
-            row=2, column=1, sticky=tk.W, pady=5, padx=(5, 0))
+            row=1, column=1, sticky=tk.W, padx=(10, 0), pady=5)
 
         # 持續時間
-        ttk.Label(main_frame, text=TRANSLATIONS[self.current_lang]['duration']).grid(
-            row=3, column=0, sticky=tk.W, pady=5)
+        ttk.Label(basic_frame, text=TRANSLATIONS[self.current_lang]['duration'], width=15).grid(
+            row=2, column=0, sticky=tk.W, pady=5)
         self.duration_var = tk.StringVar(value="10")
         self.duration_entry = ttk.Entry(
-            main_frame, textvariable=self.duration_var, width=10)
+            basic_frame, textvariable=self.duration_var, width=10)
         self.duration_entry.grid(
-            row=3, column=1, sticky=tk.W, pady=5, padx=(5, 0))
+            row=2, column=1, sticky=tk.W, padx=(10, 0), pady=5)
 
         # 速率限制
-        ttk.Label(main_frame, text=TRANSLATIONS[self.current_lang]['rate_limit']).grid(
-            row=4, column=0, sticky=tk.W, pady=5)
+        ttk.Label(basic_frame, text=TRANSLATIONS[self.current_lang]['rate_limit'], width=15).grid(
+            row=3, column=0, sticky=tk.W, pady=5)
         self.rate_var = tk.StringVar(value="0")
         self.rate_entry = ttk.Entry(
-            main_frame, textvariable=self.rate_var, width=10)
-        self.rate_entry.grid(row=4, column=1, sticky=tk.W, pady=5, padx=(5, 0))
+            basic_frame, textvariable=self.rate_var, width=10)
+        self.rate_entry.grid(row=3, column=1, sticky=tk.W,
+                             padx=(10, 0), pady=5)
+
+        # 自定義請求內容框架
+        custom_frame = ttk.LabelFrame(main_frame, text="自定義請求內容", padding="10")
+        custom_frame.grid(row=2, column=0, columnspan=3,
+                          sticky=(tk.W, tk.E), pady=(0, 20))
+        custom_frame.grid_columnconfigure(1, weight=1)
 
         # 參數文件
-        ttk.Label(main_frame, text=TRANSLATIONS[self.current_lang]['params_file']).grid(
-            row=5, column=0, sticky=tk.W, pady=5)
+        ttk.Label(custom_frame, text=TRANSLATIONS[self.current_lang]['params_file'], width=15).grid(
+            row=0, column=0, sticky=tk.W, pady=5)
         self.params_var = tk.StringVar()
-        self.params_entry = ttk.Entry(main_frame, textvariable=self.params_var)
-        self.params_entry.grid(row=5, column=1, sticky=(
-            tk.W, tk.E), pady=5, padx=(5, 5))
-        ttk.Button(main_frame, text=TRANSLATIONS[self.current_lang]['browse'],
-                   command=lambda: self.browse_file(self.params_var)).grid(row=5, column=2, padx=5)
+        self.params_entry = ttk.Entry(
+            custom_frame, textvariable=self.params_var)
+        self.params_entry.grid(row=0, column=1, sticky=(
+            tk.W, tk.E), padx=(10, 10), pady=5)
+        ttk.Button(custom_frame, text=TRANSLATIONS[self.current_lang]['browse'], width=8,
+                   command=lambda: self.browse_file(self.params_var)).grid(row=0, column=2)
 
         # Headers文件
-        ttk.Label(main_frame, text=TRANSLATIONS[self.current_lang]['headers_file']).grid(
-            row=6, column=0, sticky=tk.W, pady=5)
+        ttk.Label(custom_frame, text=TRANSLATIONS[self.current_lang]['headers_file'], width=15).grid(
+            row=1, column=0, sticky=tk.W, pady=5)
         self.headers_var = tk.StringVar()
         self.headers_entry = ttk.Entry(
-            main_frame, textvariable=self.headers_var)
-        self.headers_entry.grid(row=6, column=1, sticky=(
-            tk.W, tk.E), pady=5, padx=(5, 5))
-        ttk.Button(main_frame, text=TRANSLATIONS[self.current_lang]['browse'],
-                   command=lambda: self.browse_file(self.headers_var)).grid(row=6, column=2, padx=5)
+            custom_frame, textvariable=self.headers_var)
+        self.headers_entry.grid(row=1, column=1, sticky=(
+            tk.W, tk.E), padx=(10, 10), pady=5)
+        ttk.Button(custom_frame, text=TRANSLATIONS[self.current_lang]['browse'], width=8,
+                   command=lambda: self.browse_file(self.headers_var)).grid(row=1, column=2)
 
-        # 進度條框架
+        # 進度框架
         progress_frame = ttk.LabelFrame(
-            main_frame, text=TRANSLATIONS[self.current_lang]['progress'], padding="5")
-        progress_frame.grid(row=7, column=0, columnspan=3,
-                            sticky=(tk.W, tk.E, tk.N, tk.S), pady=10)
-
-        # 配置進度條框架的網格權重
+            main_frame, text=TRANSLATIONS[self.current_lang]['progress'], padding="10")
+        progress_frame.grid(row=3, column=0, columnspan=3,
+                            sticky=(tk.W, tk.E), pady=(0, 20))
         progress_frame.grid_columnconfigure(0, weight=1)
 
         # 進度條
@@ -586,31 +628,33 @@ class WAFTesterGUI:
         self.progress = ttk.Progressbar(
             progress_frame, mode='determinate', variable=self.progress_var)
         self.progress.grid(row=0, column=0, sticky=(
-            tk.W, tk.E), pady=5, padx=(5, 5))
+            tk.W, tk.E), padx=(5, 10), pady=10)
 
         # 進度百分比標籤
         self.progress_label = ttk.Label(progress_frame, text="0%", width=6)
-        self.progress_label.grid(row=0, column=1, padx=5)
+        self.progress_label.grid(row=0, column=1)
 
-        # 開始按鈕
+        # 開始按鈕 (使用自定義樣式)
+        style = ttk.Style()
+        style.configure('Large.TButton', padding=(20, 10))  # 創建大按鈕樣式
+
         button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=8, column=0, columnspan=3,
-                          sticky=(tk.W, tk.E), pady=10)
+        button_frame.grid(row=4, column=0, columnspan=3,
+                          sticky=(tk.W, tk.E), pady=(0, 10))
         button_frame.grid_columnconfigure(0, weight=1)
 
         self.start_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['start_test'],
-                                       command=self.start_test)
+                                       style='Large.TButton', command=self.start_test)
         self.start_button.grid(row=0, column=0)
 
         # 狀態標籤框架
         status_frame = ttk.Frame(main_frame)
-        status_frame.grid(row=9, column=0, columnspan=3,
-                          sticky=(tk.W, tk.E), pady=5)
+        status_frame.grid(row=5, column=0, columnspan=3, sticky=(tk.W, tk.E))
         status_frame.grid_columnconfigure(0, weight=1)
 
         # 狀態標籤（置中）
-        self.status_label = ttk.Label(
-            status_frame, text=TRANSLATIONS[self.current_lang]['ready'], anchor="center")
+        self.status_label = ttk.Label(status_frame, text=TRANSLATIONS[self.current_lang]['ready'],
+                                      anchor="center", font=('TkDefaultFont', 9))  # 稍微調整字體
         self.status_label.grid(row=0, column=0, sticky=(tk.W, tk.E))
 
     def switch_language(self):
