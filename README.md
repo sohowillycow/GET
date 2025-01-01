@@ -34,6 +34,55 @@ This is a stress testing tool for Web Application Firewall (WAF), supporting bot
   - Generates request status distribution graph (status_distribution.png)
   - Exports detailed test data (detailed_results.csv)
 
+## Testing Ethics
+
+- **Authorization Requirements**
+  - Must obtain explicit authorization from the target system administrator before testing
+  - Need to sign relevant testing agreements and non-disclosure agreements
+  - Strictly comply with testing scope and limitations
+
+- **Responsibilities**
+  - Testers are responsible for all testing activities
+  - Avoid causing any form of damage to the target system
+  - Ensure normal system operation and other users' usage are not affected
+
+- **Security Principles**
+  - All test data must be properly managed and securely destroyed after testing
+  - Do not disclose any sensitive information obtained during testing
+  - Immediately notify relevant personnel when security vulnerabilities are discovered
+
+## Recommended Testing Process
+
+1. **Preparation Phase**
+   - Set up testing environment
+   - Confirm testing authorization and scope
+   - Prepare test data and parameter configurations
+
+2. **Initial Testing**
+   - Conduct small-scale tests in the testing environment
+   - Verify tool configuration correctness
+   - Adjust basic parameter settings
+
+3. **Performance Testing**
+   - Gradually increase concurrency (recommended starting from 10)
+   - Incrementally extend test duration
+   - Observe and record WAF performance
+
+4. **Attack Testing**
+   - Simulate common Web attack scenarios
+   - Test WAF detection and blocking capabilities
+   - Evaluate false positives and false negatives
+
+5. **Result Analysis**
+   - Analyze test reports and charts
+   - Evaluate overall WAF performance
+   - Propose optimization suggestions
+
+6. **Follow-up Improvements**
+   - Adjust WAF configuration based on test results
+   - Optimize rule settings
+   - Conduct verification testing
+
 ## Requirements
 
 ```bash
@@ -144,6 +193,30 @@ param2=value2
 - Chart Generation: matplotlib
 - Data Processing: pandas
 
+## Disclaimer
+
+This tool is provided "as is" without warranty of any kind, either expressed or implied. By using this tool, you agree that:
+
+1. **Usage Responsibility**: You are solely responsible for how you use this tool and any consequences that may arise from its use.
+
+2. **No Liability**: The developers and contributors of this tool shall not be liable for any damages, including but not limited to:
+   - Direct or indirect damage to target systems
+   - Data loss or corruption
+   - Service interruption
+   - Any other damages resulting from the use of this tool
+
+3. **Legal Compliance**: Users must:
+   - Comply with all applicable laws and regulations
+   - Obtain necessary permissions before testing
+   - Use this tool only for legitimate security testing purposes
+
+4. **No Guarantee**: The developers do not guarantee that:
+   - The tool will meet your specific requirements
+   - The tool will be error-free
+   - Results will be accurate or reliable
+
+5. **Intended Use**: This tool is designed for security professionals and system administrators to test their own systems or systems they have permission to test.
+
 ## License
 
 [MIT License](LICENSE)
@@ -185,6 +258,55 @@ Issues and Pull Requests are welcome.
   - 生成響應時間分佈圖（response_time_distribution.png）
   - 生成請求狀態分佈圖（status_distribution.png）
   - 導出詳細測試數據（detailed_results.csv）
+
+## 測試倫理
+
+- **授權要求**
+  - 必須在獲得目標系統管理員的明確授權後才能進行測試
+  - 需簽署相關的測試協議和保密協議
+  - 嚴格遵守測試範圍和限制條件
+
+- **責任義務**
+  - 測試者需對所有測試行為負責
+  - 避免對目標系統造成任何形式的損害
+  - 確保不影響系統的正常運行和其他用戶的使用
+
+- **安全原則**
+  - 所有測試數據必須妥善保管並在測試後安全銷毀
+  - 不得洩露任何在測試過程中獲得的敏感信息
+  - 發現安全漏洞時應立即通知相關負責人
+
+## 建議測試流程
+
+1. **準備階段**
+   - 搭建測試環境
+   - 確認測試授權和範圍
+   - 準備測試數據和參數配置
+
+2. **初步測試**
+   - 在測試環境中進行小規模測試
+   - 驗證工具配置是否正確
+   - 調整基本參數設置
+
+3. **性能測試**
+   - 逐步增加並發數（建議從 10 開始）
+   - 逐漸延長測試持續時間
+   - 觀察並記錄 WAF 的性能表現
+
+4. **攻擊測試**
+   - 模擬常見的 Web 攻擊場景
+   - 測試 WAF 的檢測和攔截能力
+   - 評估誤報和漏報情況
+
+5. **結果分析**
+   - 分析測試報告和圖表
+   - 評估 WAF 的整體表現
+   - 提出優化建議
+
+6. **後續改進**
+   - 根據測試結果調整 WAF 配置
+   - 優化規則設置
+   - 進行驗證性測試
 
 ## 安裝要求
 
@@ -295,6 +417,30 @@ param2=value2
 - GUI框架：tkinter
 - 圖表生成：matplotlib
 - 數據處理：pandas
+
+## 免責聲明
+
+本工具按"原樣"提供，不提供任何形式的明示或暗示保證。使用本工具即表示您同意：
+
+1. **使用責任**：您對使用本工具的方式及由此產生的任何後果承擔全部責任。
+
+2. **免責條款**：本工具的開發者和貢獻者不對以下情況承擔任何責任：
+   - 對目標系統的直接或間接損害
+   - 數據丟失或損壞
+   - 服務中斷
+   - 因使用本工具導致的任何其他損害
+
+3. **法律合規**：使用者必須：
+   - 遵守所有適用的法律法規
+   - 在測試前獲得必要的許可
+   - 僅將本工具用於合法的安全測試目的
+
+4. **無保證**：開發者不保證：
+   - 本工具將滿足您的特定需求
+   - 本工具完全無錯誤
+   - 結果完全準確或可靠
+
+5. **預期用途**：本工具專為安全專業人員和系統管理員設計，用於測試其自有系統或獲得授權的系統。
 
 ## 許可證
 
