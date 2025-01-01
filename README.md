@@ -195,27 +195,61 @@ param2=value2
 
 ## Disclaimer
 
-This tool is provided "as is" without warranty of any kind, either expressed or implied. By using this tool, you agree that:
+By using this WAF Testing Tool (hereinafter referred to as "the Tool"), you must read, understand, and agree to the following disclaimer. If you do not agree with any part of this disclaimer, please do not use this Tool.
 
-1. **Usage Responsibility**: You are solely responsible for how you use this tool and any consequences that may arise from its use.
+1. **Authorized Use Only**
+   - This Tool is intended solely for legitimate security testing and research purposes
+   - Testing must only be conducted with explicit authorization from system owners
+   - Unauthorized testing is illegal and may result in severe legal consequences
+   - Users must obtain and maintain proper documentation of authorization
 
-2. **No Liability**: The developers and contributors of this tool shall not be liable for any damages, including but not limited to:
-   - Direct or indirect damage to target systems
-   - Data loss or corruption
-   - Service interruption
-   - Any other damages resulting from the use of this tool
+2. **Risk Warning**
+   - This Tool may cause adverse effects on target systems, including but not limited to:
+     * Service interruption
+     * Performance degradation
+     * System instability
+   - Users must evaluate and accept all risks associated with using this Tool
+   - Testing should be conducted in appropriate test environments when possible
 
-3. **Legal Compliance**: Users must:
-   - Comply with all applicable laws and regulations
-   - Obtain necessary permissions before testing
-   - Use this tool only for legitimate security testing purposes
+3. **Liability Limitations**
+   - The developers and contributors of this Tool shall not be liable for:
+     * Any direct or indirect damages
+     * Data loss or corruption
+     * Service interruptions
+     * Legal consequences
+     * Any other damages or losses arising from the use of this Tool
 
-4. **No Guarantee**: The developers do not guarantee that:
-   - The tool will meet your specific requirements
-   - The tool will be error-free
-   - Results will be accurate or reliable
+4. **Legal Compliance**
+   - Users must comply with all applicable local, national, and international laws
+   - The Tool must not be used for any illegal purposes
+   - Users are responsible for understanding and following relevant regulations
+   - Any illegal use is strictly prohibited and automatically voids any rights to use the Tool
 
-5. **Intended Use**: This tool is designed for security professionals and system administrators to test their own systems or systems they have permission to test.
+5. **Prohibited Uses**
+   - Attacking unauthorized systems
+   - Malicious destruction or disruption
+   - Any form of illegal activities
+   - Testing systems without proper authorization
+   - Using the Tool to cause intentional harm
+
+6. **No Warranty**
+   - The Tool is provided "AS IS" without any warranty of any kind
+   - No guarantee of:
+     * Merchantability
+     * Fitness for a particular purpose
+     * Accuracy of results
+     * Error-free operation
+     * Meeting specific requirements
+
+7. **User Responsibility**
+   - Users are solely responsible for:
+     * All actions taken using this Tool
+     * Consequences of their testing activities
+     * Maintaining proper authorization
+     * Protecting test data and results
+     * Reporting security issues responsibly
+
+Using this Tool indicates your acceptance of all terms in this disclaimer. If you disagree with any terms, you must not use this Tool.
 
 ## License
 
@@ -420,27 +454,61 @@ param2=value2
 
 ## 免責聲明
 
-本工具按"原樣"提供，不提供任何形式的明示或暗示保證。使用本工具即表示您同意：
+使用本 WAF 測試工具（以下簡稱"本工具"）前，您必須仔細閱讀、理解並同意以下免責聲明。如果您不同意本聲明的任何部分，請勿使用本工具。
 
-1. **使用責任**：您對使用本工具的方式及由此產生的任何後果承擔全部責任。
+1. **授權使用要求**
+   - 本工具僅供合法的安全測試和研究使用
+   - 必須在獲得系統所有者的明確授權後才能進行測試
+   - 未經授權的測試行為屬於非法，可能導致嚴重的法律後果
+   - 使用者必須獲得並保存適當的授權文件
 
-2. **免責條款**：本工具的開發者和貢獻者不對以下情況承擔任何責任：
-   - 對目標系統的直接或間接損害
-   - 數據丟失或損壞
-   - 服務中斷
-   - 因使用本工具導致的任何其他損害
+2. **風險警示**
+   - 本工具可能對目標系統造成的負面影響包括但不限於：
+     * 服務中斷
+     * 性能下降
+     * 系統不穩定
+   - 使用者必須評估並接受使用本工具的所有風險
+   - 建議在適當的測試環境中進行測試
 
-3. **法律合規**：使用者必須：
-   - 遵守所有適用的法律法規
-   - 在測試前獲得必要的許可
-   - 僅將本工具用於合法的安全測試目的
+3. **責任限制**
+   - 本工具的開發者和貢獻者不對以下情況承擔責任：
+     * 任何直接或間接損害
+     * 數據丟失或損壞
+     * 服務中斷
+     * 法律後果
+     * 因使用本工具導致的任何其他損害或損失
 
-4. **無保證**：開發者不保證：
-   - 本工具將滿足您的特定需求
-   - 本工具完全無錯誤
-   - 結果完全準確或可靠
+4. **法律合規**
+   - 使用者必須遵守所有適用的地方、國家和國際法律
+   - 本工具不得用於任何非法目的
+   - 使用者有責任理解並遵守相關法規
+   - 任何非法使用都將自動喪失使用本工具的權利
 
-5. **預期用途**：本工具專為安全專業人員和系統管理員設計，用於測試其自有系統或獲得授權的系統。
+5. **禁止的用途**
+   - 攻擊未經授權的系統
+   - 惡意破壞或干擾
+   - 任何形式的違法活動
+   - 未經適當授權的測試
+   - 使用本工具造成蓄意傷害
+
+6. **無擔保聲明**
+   - 本工具按"原樣"提供，不提供任何形式的擔保
+   - 不保證：
+     * 適銷性
+     * 特定用途的適用性
+     * 結果的準確性
+     * 無錯誤運行
+     * 滿足特定需求
+
+7. **使用者責任**
+   - 使用者對以下方面負有完全責任：
+     * 使用本工具進行的所有行為
+     * 測試活動的後果
+     * 維護適當的授權
+     * 保護測試數據和結果
+     * 負責任地報告安全問題
+
+使用本工具即表示您接受本免責聲明的所有條款。如果您不同意任何條款，則必須停止使用本工具。
 
 ## 許可證
 
