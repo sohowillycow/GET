@@ -413,26 +413,74 @@ class WAFTesterGUI:
         disclaimer_window = tk.Toplevel(self.root)
         disclaimer_window.title(
             TRANSLATIONS[self.current_lang]['disclaimer_title'])
-        disclaimer_window.geometry("600x400")
+        disclaimer_window.geometry("600x500")  # 增加窗口高度
         disclaimer_window.transient(self.root)
         disclaimer_window.grab_set()
 
+        # 禁用關閉按鈕，改為調用不同意的處理函數
+        disclaimer_window.protocol(
+            "WM_DELETE_WINDOW", lambda: self.handle_disclaimer_response(disclaimer_window, False))
+
+        # 確保窗口大小不能調整
+        disclaimer_window.resizable(False, False)
+
+        # 主框架
+        main_frame = ttk.Frame(disclaimer_window, padding="10")
+        main_frame.pack(expand=True, fill=tk.BOTH)
+
+        # 語言切換框架
+        lang_frame = ttk.Frame(main_frame)
+        lang_frame.pack(fill=tk.X, pady=(0, 10))
+
+        # 當前語言標籤
+        lang_label = ttk.Label(
+            lang_frame, text=TRANSLATIONS[self.current_lang]['current_lang'])
+        lang_label.pack(side=tk.LEFT, padx=5)
+
+        # 語言切換按鈕
+        def switch_disclaimer_language():
+            self.current_lang = 'en_US' if self.current_lang == 'zh_TW' else 'zh_TW'
+            disclaimer_window.title(
+                TRANSLATIONS[self.current_lang]['disclaimer_title'])
+            lang_label.config(
+                text=TRANSLATIONS[self.current_lang]['current_lang'])
+            lang_button.config(
+                text=TRANSLATIONS[self.current_lang]['switch_lang'])
+            text_widget.config(state=tk.NORMAL)
+            text_widget.delete(1.0, tk.END)
+            text_widget.insert(tk.END, DISCLAIMER_TEXT[self.current_lang])
+            text_widget.config(state=tk.DISABLED)
+            agree_button.config(text=TRANSLATIONS[self.current_lang]['agree'])
+            disagree_button.config(
+                text=TRANSLATIONS[self.current_lang]['disagree'])
+
+        lang_button = ttk.Button(lang_frame, text=TRANSLATIONS[self.current_lang]['switch_lang'],
+                                 command=switch_disclaimer_language)
+        lang_button.pack(side=tk.RIGHT, padx=5)
+
+        # 文本框框架（添加固定高度）
+        text_frame = ttk.Frame(main_frame)
+        text_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+
         # 文本框
-        text_widget = tk.Text(
-            disclaimer_window, wrap=tk.WORD, padx=10, pady=10)
-        text_widget.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        text_widget = tk.Text(text_frame, wrap=tk.WORD,
+                              padx=10, pady=10, height=15)  # 設置固定高度
+        text_widget.pack(fill=tk.BOTH, expand=True)
         text_widget.insert(tk.END, DISCLAIMER_TEXT[self.current_lang])
         text_widget.config(state=tk.DISABLED)
 
         # 按鈕框架
-        button_frame = ttk.Frame(disclaimer_window)
-        button_frame.pack(pady=10)
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(pady=(0, 10))
 
-        # 總是顯示同意/不同意按鈕
-        ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['agree'],
-                   command=lambda: self.handle_disclaimer_response(disclaimer_window, True)).pack(side=tk.LEFT, padx=5)
-        ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['disagree'],
-                   command=lambda: self.handle_disclaimer_response(disclaimer_window, False)).pack(side=tk.LEFT, padx=5)
+        # 同意/不同意按鈕
+        agree_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['agree'],
+                                  command=lambda: self.handle_disclaimer_response(disclaimer_window, True))
+        agree_button.pack(side=tk.LEFT, padx=5)
+
+        disagree_button = ttk.Button(button_frame, text=TRANSLATIONS[self.current_lang]['disagree'],
+                                     command=lambda: self.handle_disclaimer_response(disclaimer_window, False))
+        disagree_button.pack(side=tk.LEFT, padx=5)
 
     def handle_disclaimer_response(self, window, accepted):
         """處理用戶對免責聲明的響應"""
