@@ -138,6 +138,16 @@ class WAFTesterGUI:
         self.root.title(TRANSLATIONS[self.current_lang]['title'])
         self.root.geometry("600x550")
 
+        # 設置應用程式圖示
+        try:
+            # 嘗試載入圖示
+            icon_path = "icon.png"  # 請確保圖示文件存在
+            if os.path.exists(icon_path):
+                icon_image = tk.PhotoImage(file=icon_path)
+                self.root.iconphoto(True, icon_image)
+        except Exception as e:
+            print(f"無法載入圖示：{str(e)}")
+
         # 設置最小視窗尺寸
         self.root.minsize(500, 450)
 
